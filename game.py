@@ -1,5 +1,3 @@
-import cmd
-import textwrap
 import sys
 import os
 import time
@@ -28,7 +26,7 @@ Player starts at A1
 -------------
 '''
 
-NAME = ''
+NAME = 'name'
 DESCRIPTION = 'description'
 UP = 'north'
 DOWN = 'south'
@@ -174,15 +172,20 @@ town_map = {
 def prompt():
     print("\n\n========================================")
     print("What would you like to do?")
+    #Receives player input
     action = input("> ")
     acceptable_inputs = ["travel", "move", "go", "walk", "leave", "investigate", "look", "observe", "inspect", "interact", "quit"]
+    #Checks if player input is a valid action
     while action.lower() not in acceptable_inputs:
         print("Please enter a valid action.")
         action = input("> ")
+    #player chooses to quit
     if action.lower() == "quit":
         sys.exit()
+    #Player chooses to move
     elif action.lower() in ["move", "go", "travel", "walk", "leave"]:
         move(action.lower())
+    #Player chooses to investigate
     elif action.lower() in ["investigate", "look", "observe", "inspect", "interact"]:
         investigate(action.lower())
       
@@ -191,22 +194,27 @@ def prompt():
 def move(myAction):
 	askString = "Where would you like to "+myAction+" to?\n> "
 	destination = input(askString)
+    #Player moves up
 	if destination == 'north':
 		move_dest = town_map[myPlayer.location][UP]
 		move_player(move_dest)
+    #Player moves left
 	elif destination == 'west':
 		move_dest = town_map[myPlayer.location][LEFT]
 		move_player(move_dest)
+    #Player moves right 
 	elif destination == 'east':
 		move_dest = town_map[myPlayer.location][RIGHT]
 		move_player(move_dest)
+    #Player moves down
 	elif destination == 'south':
 		move_dest = town_map[myPlayer.location][DOWN]
 		move_player(move_dest)
 	else:
 		print("Invalid direction command, try using north, south, west, or east.\n")
 		move(myAction)
-  
+
+#Prints the movement action and changes player's destination into current location
 def move_player(move_dest):
 	print("\nYou have moved to the " + move_dest + ".")
 	myPlayer.location = move_dest
@@ -223,6 +231,8 @@ def print_location():
 #It also uses the flag dictionary, and if you reached a certain flag, a certain event will occur. 
 #Likewise, if you haven't reached a certain flag, then said event will not occur, replaced by a generic event.
 def investigate(Action):
+    
+    #Events for the location Border
     if myPlayer.location == 'a0':
         void = ("\n" + "You shouldn't be here. Move anywhere to go back home.")
         for character in void:
@@ -230,6 +240,8 @@ def investigate(Action):
                 sys.stdout.flush()
                 time.sleep(0.05)
         time.sleep(0.5)
+    
+    #Events for the location Home
     elif myPlayer.location == 'a1':
         home = ("\n" + "There isn't much to do at home. Let's just get outside.")
         for character in home:
@@ -237,6 +249,8 @@ def investigate(Action):
                 sys.stdout.flush()
                 time.sleep(0.05)
         time.sleep(0.5)
+        
+    #Events for the location Café
     elif myPlayer.location == 'a2':
         if flags['FLAG03'] == flags['FLAG04'] == True:
             Café1 = ("\n" + "You walked to the counter and waved at the sole barista.")
@@ -325,7 +339,8 @@ def investigate(Action):
                 sys.stdout.write(character)
                 sys.stdout.flush()
                 time.sleep(0.05)
-                
+   
+    #Events for the location University             
     elif myPlayer.location == 'a3':
         if flags['FLAG02']==False:
             Uni1 = ("\n" + "You arrive at Grand Oak University. In class you spot your friend Joseph, who has been living in town before you transfered. The two of you meet and he greets you with a hug.")
@@ -372,7 +387,7 @@ def investigate(Action):
             time.sleep(0.5)
             flags['FLAG02'] = True
             
-        elif flags['FLAG02'] == flags['FLAG03'] == True:
+        elif flags['FLAG02'] == flags['FLAG03'] == True and flags['FLAG04'] == False:
             Jos7 = ("\n" + '"Oh. My. God."')
             for character in Jos7:
                 sys.stdout.write(character)
@@ -456,6 +471,15 @@ def investigate(Action):
             time.sleep(0.5)
             flags['FLAG11'] = True
             
+        elif flags['FLAG03'] == flags['FLAG04'] == flags['FLAG10'] == flags['FLAG11'] == True:
+            Uni2 = ("\n" + 'There is nothing to do in the university.')
+            for character in Uni2:
+                sys.stdout.write(character)
+                sys.stdout.flush()
+                time.sleep(0.05)
+            time.sleep(0.5)
+
+    #Events for the location Bar
     elif myPlayer.location == 'a4':
         if flags['FLAG05'] == True and flags['FLAG07'] == False:
             Bar1 = ("\n" + "You sat on the stool as the soft jazz tune played in the room. The bartender approached you shortly after finishing another custormer's order.")
@@ -532,7 +556,7 @@ def investigate(Action):
             time.sleep(0.5)
             flags['FLAG07'] = True
             
-        elif flags['FLAG03'] == flags['FLAG05'] == flags['FLAG07'] == False:
+        elif flags['FLAG05'] == flags['FLAG07'] == False:
             Bar3 = ("\n" + "You sat down at the bar, enjoying the chatter and the music. However you aren't much of a drinker, so you left shortly after.")
             for character in Bar3:
                 sys.stdout.write(character)
@@ -548,7 +572,7 @@ def investigate(Action):
                 time.sleep(0.05)
             time.sleep(0.5)
     
-            
+    #Events for the location Neighbor's House       
     elif myPlayer.location == 'b1':
         if flags['FLAG01'] == False:
             Kate1 = ("\n" + "You knocked on the door to the neighbor's house. Not long after, an old woman opened the door.")
@@ -609,7 +633,8 @@ def investigate(Action):
                 sys.stdout.flush()
                 time.sleep(0.05)
             time.sleep(0.5)
-            
+    
+    #Events for the location Park East and West        
     elif myPlayer.location == 'b2' or myPlayer.location =='b4':
         park_non_center = ("\n" + "You loitered around the park. It was a nice walk, but there wasn't much to do.")
         for character in park_non_center:
@@ -617,6 +642,7 @@ def investigate(Action):
                 sys.stdout.flush()
                 time.sleep(0.05)
 
+    #Events for the location Park Center
     elif myPlayer.location == 'b3':
         if flags['FLAG00'] == True:
             Park1 = ("\n" + "You admired the Grand Oak Tree where it stood. It towers over most of the building in the small town. It also emits a nice smell.")
@@ -664,6 +690,7 @@ def investigate(Action):
                 time.sleep(0.05)
             time.sleep(0.5)
             
+    #Events for the location Store
     elif myPlayer.location == 'c1':
         if flags['FLAG00'] == True:
             Store1 = ("\n" + "You entered the large department store. You scanned around the store and saw that it contained pretty much anything a household needs, including a shovel.\nFortunately you already have one, so there is no need to visit the store anymore.")
@@ -681,9 +708,10 @@ def investigate(Action):
                 time.sleep(0.05)
             time.sleep(0.5)
             flags['FLAG00'] = True
-    
+            
+    #Events for the location Library
     elif myPlayer.location == 'c2':
-        if flags['FLAG03'] == flags['FLAG10'] == False:
+        if flags['FLAG03'] == True and flags['FLAG10'] == False:
             Lib1 = ("\n" + "You entered the library to research more about the treasure chest. You tiptoed over to the librarian in duty and asked him about it.")
             for character in Lib1:
                 sys.stdout.write(character)
@@ -761,7 +789,8 @@ def investigate(Action):
                 sys.stdout.flush()
                 time.sleep(0.05)
             time.sleep(0.5)
-            
+    
+    #Events for the location Police Station        
     elif myPlayer.location == 'c3':
         if flags['FLAG03'] == flags['FLAG05'] == True:
             Pol1 = ("\n" + "You entered the police station and asked for Archie. The receptionist made a call and then directed you to his office.")
@@ -816,6 +845,8 @@ def investigate(Action):
                 time.sleep(0.04)
             time.sleep(0.5)
             
+            
+    #Events for the location Clock Tower
     elif myPlayer.location == 'c4':
         if flags['FLAG02'] == True and flags['FLAG03'] == False:
             ct1 = ("\n" + "Your curiosity piqued and you braved through the clock tower. As expected, it is quite empty. No surprise there, though. The building has been abandoned for years.")
@@ -957,7 +988,7 @@ def investigate(Action):
                 sys.stdout.flush()
                 time.sleep(0.05)
             time.sleep(0.5)
-            End2_7 = ("\n" + '"Yeah... This would be a fun talk between us over some drinks. You can come too, '+str(myPlayer.name)+', if you'+"'"+'d like.')
+            End2_7 = ("\n" + '"Yeah... This would be a fun talk between us over some drinks. You can come too, '+str(myPlayer.name)+', if you'+"'"+'d like."')
             for character in End2_7:
                 sys.stdout.write(character)
                 sys.stdout.flush()
@@ -1039,7 +1070,7 @@ def investigate(Action):
                 sys.stdout.flush()
                 time.sleep(0.05)
             time.sleep(0.5)
-            End3_8 = ("\n" + '"Oh! Yes! I kept the good stuff just for this occasion," Jean said with glee')
+            End3_8 = ("\n" + '"Oh! Yes! I kept the good stuff just for this occasions like this," Jean said with glee.')
             for character in End3_8:
                 sys.stdout.write(character)
                 sys.stdout.flush()
@@ -1079,13 +1110,13 @@ def investigate(Action):
             for character in Ending3:
                 sys.stdout.write(character)
                 sys.stdout.flush()
-                time.sleep(1)
+                time.sleep()
             time.sleep(0.5)
             ThankYou = ("\nTHANK YOU FOR PLAYING")
             for character in ThankYou:
                 sys.stdout.write(character)
                 sys.stdout.flush()
-                time.sleep(0.75)
+                time.sleep(0.5)
             time.sleep(0.5)
             flags['FLAG15'] = True
             myPlayer.won = True
@@ -1173,3 +1204,4 @@ def setup_game():
 
         
 title_screen()
+
